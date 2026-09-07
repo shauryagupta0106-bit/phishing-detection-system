@@ -1,0 +1,7 @@
+From: security-alert@random-mail.example
+Subject: URGENT final warning
+
+Your account is suspended. Verify your password and OTP immediately within 24 hours:
+http://secure-account.example.top/login
+
+Never use real credentials in testing.

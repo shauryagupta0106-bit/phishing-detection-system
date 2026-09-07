@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard | Phishing Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="background-glow"></div>
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-mark">PG</div>
+            <div>
+                <div class="brand-name">PhishGuard</div>
+                <div class="brand-subtitle">Explainable phishing analysis</div>
+            </div>
+        </div>
+        <span class="badge">EDUCATIONAL SECURITY TOOL</span>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <div class="eyebrow">TASK 04 • CYBERSECURITY PROJECT</div>
+            <h1>Detect suspicious <span>URLs & emails</span> before they trick users.</h1>
+            <p>Enter a URL or paste email text. PhishGuard checks explainable phishing indicators and produces a risk score with evidence.</p>
+        </section>
+
+        <section class="analyzer-card">
+            <div class="tabs">
+                <button class="tab active" data-type="url">URL Analysis</button>
+                <button class="tab" data-type="email">Email Analysis</button>
+            </div>
+
+            <label id="inputLabel" for="inputText">URL to analyze</label>
+            <textarea id="inputText" placeholder="https://example.com/login"></textarea>
+
+            <div class="examples">
+                <span>Try an example:</span>
+                <button id="safeExample">Safe demo</button>
+                <button id="suspiciousExample">Suspicious demo</button>
+            </div>
+
+            <button id="analyzeBtn" class="analyze-btn">
+                <span>Analyze Input</span>
+                <span>→</span>
+            </button>
+
+            <div id="errorBox" class="error hidden"></div>
+        </section>
+
+        <section id="resultSection" class="result hidden">
+            <div class="result-head">
+                <div>
+                    <div class="eyebrow">ANALYSIS RESULT</div>
+                    <h2 id="verdict">Result</h2>
+                    <p id="summary"></p>
+                </div>
+                <div class="score-ring">
+                    <div>
+                        <strong id="score">0</strong>
+                        <span>/100</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="risk-bar">
+                <div id="riskFill"></div>
+            </div>
+
+            <div class="result-grid">
+                <div class="panel">
+                    <h3>Detected indicators</h3>
+                    <div id="findings"></div>
+                </div>
+                <div class="panel details">
+                    <h3>Input details</h3>
+                    <div id="details"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-it-works">
+            <div class="eyebrow">HOW IT WORKS</div>
+            <h2>Simple, explainable security logic</h2>
+            <div class="steps">
+                <div class="step"><b>01</b><h3>Collect</h3><p>User provides a URL or email message.</p></div>
+                <div class="step"><b>02</b><h3>Inspect</h3><p>The engine checks suspicious patterns and social-engineering signals.</p></div>
+                <div class="step"><b>03</b><h3>Score</h3><p>Each signal contributes points to a transparent risk score.</p></div>
+                <div class="step"><b>04</b><h3>Explain</h3><p>The dashboard shows the evidence behind the classification.</p></div>
+            </div>
+        </section>
+
+        <footer>
+            <p>PhishGuard is an educational project. Never paste passwords, OTPs, private credentials, or confidential email content into the demo.</p>
+        </footer>
+    </main>
+
+<script>
+let currentType = "url";
+
+const input = document.getElementById("inputText");
+const inputLabel = document.getElementById("inputLabel");
+const analyzeBtn = document.getElementById("analyzeBtn");
+const resultSection = document.getElementById("resultSection");
+const errorBox = document.getElementById("errorBox");
+
+document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        currentType = tab.dataset.type;
+        inputLabel.textContent = currentType === "url" ? "URL to analyze" : "Email text to analyze";
+        input.placeholder = currentType === "url"
+            ? "https://example.com/login"
+            : "From: security@example.com\\nSubject: Urgent account verification\\n\\nPlease verify your account...";
+        input.value = "";
+        resultSection.classList.add("hidden");
+        errorBox.classList.add("hidden");
+    });
+});
+
+document.getElementById("safeExample").addEventListener("click", () => {
+    if (currentType === "url") input.value = "https://www.example.com/";
+    else input.value = "From: newsletter@example.com\\nSubject: Monthly newsletter\\n\\nHere are this month's updates.";
+});
+
+document.getElementById("suspiciousExample").addEventListener("click", () => {
+    if (currentType === "url") input.value = "http://secure-account-verify-login.example.top/update-password";
+    else input.value = "From: security-alert@random-mail.example\\nSubject: URGENT final warning\\n\\nYour account is suspended. Verify your password and OTP immediately within 24 hours: http://secure-account.example.top/login";
+});
+
+analyzeBtn.addEventListener("click", async () => {
+    const text = input.value.trim();
+    errorBox.classList.add("hidden");
+
+    if (!text) {
+        errorBox.textContent = "Please enter something to analyze.";
+        errorBox.classList.remove("hidden");
+        return;
+    }
+
+    analyzeBtn.disabled = true;
+    analyzeBtn.querySelector("span:first-child").textContent = "Analyzing...";
+
+    try {
+        const response = await fetch("/analyze", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({input_type: currentType, text})
+        });
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.error || "Analysis failed.");
+
+        renderResult(data);
+    } catch (error) {
+        errorBox.textContent = error.message;
+        errorBox.classList.remove("hidden");
+    } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.querySelector("span:first-child").textContent = "Analyze Input";
+    }
+});
+
+function renderResult(data) {
+    resultSection.classList.remove("hidden");
+    document.getElementById("verdict").textContent = data.verdict;
+    document.getElementById("summary").textContent = data.summary;
+    document.getElementById("score").textContent = data.score;
+    document.getElementById("riskFill").style.width = data.score + "%";
+
+    const findings = document.getElementById("findings");
+    findings.innerHTML = data.findings.length
+        ? data.findings.map(f => `
+            <div class="finding">
+                <div class="finding-top">
+                    <strong>${escapeHtml(f.title)}</strong>
+                    <span class="severity ${f.severity}">${escapeHtml(f.severity)}</span>
+                </div>
+                <p>${escapeHtml(f.detail)}</p>
+            </div>`).join("")
+        : `<div class="clean">✓ No major warning indicators were detected.</div>`;
+
+    const details = document.getElementById("details");
+    details.innerHTML = `
+        <div class="detail-row"><span>Type</span><b>${escapeHtml(data.input_type)}</b></div>
+        <div class="detail-row"><span>Risk level</span><b>${escapeHtml(data.risk_level)}</b></div>
+        ${data.domain ? `<div class="detail-row"><span>Domain</span><b>${escapeHtml(data.domain)}</b></div>` : ""}
+        ${data.normalized ? `<div class="detail-row"><span>Normalized URL</span><b>${escapeHtml(data.normalized)}</b></div>` : ""}
+    `;
+
+    resultSection.scrollIntoView({behavior: "smooth", block: "start"});
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, c => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+    }[c]));
+}
+</script>
+</body>
+</html>
