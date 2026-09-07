@@ -25,11 +25,11 @@ PhishGuard is a Python + Flask cybersecurity application that analyzes URLs and 
 
 ### 🔗 Safe URL Detection
 
-![Safe URL Analysis](screenshots/SafeUrl.png)
+![Safe URL Analysis](screenshots/SafeURL.png)
 
 ### ⚠️ Suspicious URL Detection
 
-![Suspicious URL Analysis](screenshots/SuspiciousUrl.png)
+![Suspicious URL Analysis](screenshots/SuspiciousURL.png)
 
 ### 📧 Email Phishing Analysis
 
