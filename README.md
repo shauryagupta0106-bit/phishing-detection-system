@@ -1,5 +1,46 @@
 # 🛡️ PhishGuard
 
+### Explainable Phishing Detection System
+
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-Web%20Framework-black?logo=flask&logoColor=white)
+![Pytest](https://img.shields.io/badge/Tests-pytest-0A9EDC?logo=pytest&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+# 🛡️ PhishGuard
+
+### Explainable Phishing Detection System
+
+![PhishGuard Homepage](screenshots/Homepage.png)
+
+PhishGuard is a Python + Flask cybersecurity application that analyzes URLs and email text for common phishing indicators and generates an explainable risk score.
+
+---
+
+## 📸 Application Screenshots
+
+### 🏠 Homepage
+
+![Homepage](screenshots/Homepage.png)
+
+### 🔗 Safe URL Detection
+
+![Safe URL Analysis](screenshots/SafeUrl.png)
+
+### ⚠️ Suspicious URL Detection
+
+![Suspicious URL Analysis](screenshots/SuspiciousUrl.png)
+
+### 📧 Email Phishing Analysis
+
+![Email Analysis](screenshots/Emailanalysis.png)
+
+### 💻 Testing & Development
+
+![VS Code Terminal](screenshots/VSCodeterminal.png)
+
+# 🛡️ PhishGuard
+
 **Phishing Detection System for URL & Email Analysis**
 
 PhishGuard is a beginner-friendly cybersecurity web application that analyzes URLs and email text for common phishing indicators. It uses explainable, rule-based heuristics to calculate a risk score and show the evidence behind the result.
